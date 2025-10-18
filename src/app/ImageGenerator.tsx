@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 
-const Shittyui: React.FC = () => {
+const ImageGenerator: React.FC = () => {
     const [text, setText] = useState<string>("");
     const [imageSrc, setImgSrc] = useState<string | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
@@ -84,4 +84,4 @@ const Shittyui: React.FC = () => {
     );
 };
 
-export default Shittyui;
+export default ImageGenerator;
