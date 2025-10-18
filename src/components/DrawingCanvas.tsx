@@ -75,19 +75,21 @@ const DrawingCanvas: React.FC<DrawingCanvasProps> = ({
 
     return (
         <div className="flex flex-col items-center gap-4">
-            <div className="relative w-[500px] h-auto border border-gray-300 rounded-lg overflow-hidden">
-                <canvas
-                    ref={backgroundCanvasRef}
-                    className="absolute top-0 left-0 w-full h-full z-10"
-                />
-                <canvas
-                    ref={drawingCanvasRef}
-                    className="absolute top-0 left-0 w-full h-full z-20 cursor-crosshair"
-                    onMouseDown={startDrawing}
-                    onMouseMove={draw}
-                    onMouseUp={stopDrawing}
-                    onMouseLeave={stopDrawing}
-                />
+            <div className="w-[500px] h-[500px] border border-gray-300 rounded-lg overflow-hidden">
+                <div className="relative w-full h-full">
+                    <canvas
+                        ref={backgroundCanvasRef}
+                        className="absolute top-0 left-0 w-full z-10"
+                    />
+                    <canvas
+                        ref={drawingCanvasRef}
+                        className="absolute top-0 left-0 w-full z-20 cursor-crosshair"
+                        onMouseDown={startDrawing}
+                        onMouseMove={draw}
+                        onMouseUp={stopDrawing}
+                        onMouseLeave={stopDrawing}
+                    />
+                </div>
             </div>
             <div className="flex gap-4 items-center p-2 bg-gray-100 rounded-lg">
                 <div className="flex flex-col items-center">

@@ -16,22 +16,19 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
     products,
 }) => {
     return (
-        <div className="w-full p-8">
+        <div className="w-[90%] lg:w-[50%] p-2 lg:p-8 mx-auto">
             <div className="mb-12 text-center">
                 <h2 className="text-3xl font-bold mb-6">Your New Look</h2>
-                <div className="relative w-[500px] h-[500px] mx-auto border border-gray-300 rounded-lg overflow-hidden">
-                    <Image
+                <div className="w-[80%] lg:w-[50%] flex flex-row mx-auto border border-gray-300 rounded-lg overflow-hidden">
+                    <img
+                        className="object-contain flex-1 min-w-0"
                         src={URL.createObjectURL(originalImage)}
                         alt="Original user upload"
-                        layout="fill"
-                        objectFit="cover"
                     />
-                    <Image
+                    <img
+                        className="object-contain flex-1 min-w-0"
                         src={generatedClothingUrl}
                         alt="AI Generated Clothing"
-                        layout="fill"
-                        objectFit="contain"
-                        className="z-10"
                     />
                 </div>
             </div>
