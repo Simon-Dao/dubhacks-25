@@ -8,26 +8,24 @@ import DrawingCanvas from "../components/DrawingCanvas";
 import ResultsDisplay from "../components/ResultsDisplay";
 import { Product } from "../components/ProductCard";
 
-type AppState = "UPLOAD" | "DRAW" | "RESULTS";
-
 export default function Home() {
-    const [appState, setAppState] = useState<AppState>("UPLOAD");
     const [userImage, setUserImage] = useState<File | null>(null);
-    const [generatedClothing, setGeneratedClothing] = useState<string | null>(
-        null,
-    );
+    const [generatedClothing, setGeneratedClothing] = useState<
+        { id: string; url: string }[]
+    >([]);
     const [products, setProducts] = useState<Product[]>([]);
     const [isLoading, setIsLoading] = useState(false);
+    const [isDrawing, setIsDrawing] = useState(false);
+    const [isUploading, setIsUploading] = useState(false);
 
     const handleImageUpload = (file: File) => {
         setUserImage(file);
-        setAppState("DRAW");
+        setIsUploading(false);
     };
 
     const handleGenerate = async (drawingDataUrl: string) => {
-        if (!userImage) return;
-
         setIsLoading(true);
+        setIsDrawing(false);
 
         try {
             const clothingResponse = await fetch("/api/generate-clothing", {
@@ -35,7 +33,10 @@ export default function Home() {
                 body: JSON.stringify({ drawing: drawingDataUrl }),
             });
             const { generatedClothingUrl } = await clothingResponse.json();
-            setGeneratedClothing(generatedClothingUrl);
+            setGeneratedClothing((prev) => [
+                ...prev,
+                { id: Date.now().toString(), url: generatedClothingUrl },
+            ]);
 
             const searchResponse = await fetch("/api/reverse-image-search", {
                 method: "POST",
@@ -43,8 +44,6 @@ export default function Home() {
             });
             const { products } = await searchResponse.json();
             setProducts(products);
-
-            setAppState("RESULTS");
         } catch (error) {
             console.error("Failed to generate results:", error);
         } finally {
@@ -52,48 +51,54 @@ export default function Home() {
         }
     };
 
-    const renderContent = () => {
-        if (isLoading) {
-            return (
-                <div className="text-xl font-semibold text-gray-600">
-                    Generating your new look...
-                </div>
-            );
+    const renderMainContent = () => {
+        if (!userImage) {
+            return <ImageUploader onImageUpload={handleImageUpload} />;
         }
 
-        switch (appState) {
-            case "UPLOAD":
-                return <ImageUploader onImageUpload={handleImageUpload} />;
-            case "DRAW":
-                return (
-                    userImage && (
-                        <DrawingCanvas
-                            imageFile={userImage}
-                            onGenerate={handleGenerate}
-                        />
-                    )
-                );
-            case "RESULTS":
-                return (
-                    userImage &&
-                    generatedClothing && (
-                        <ResultsDisplay
-                            originalImage={userImage}
-                            generatedClothingUrl={generatedClothing}
-                            products={products}
-                        />
-                    )
-                );
-            default:
-                return <ImageUploader onImageUpload={handleImageUpload} />;
-        }
+        return (
+            <div className="w-full">
+                <div className="flex justify-end mb-4">
+                    <button
+                        onClick={() => setIsDrawing(true)}
+                        className="px-6 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors"
+                    >
+                        Draw New Clothing
+                    </button>
+                </div>
+                <ResultsDisplay
+                    originalImage={userImage}
+                    generatedClothing={generatedClothing}
+                    products={products}
+                    onChangePhoto={() => setIsUploading(true)}
+                />
+            </div>
+        );
     };
 
     return (
         <div className="flex flex-col min-h-screen bg-gray-50">
             <Header />
             <main className="flex-grow flex flex-col justify-center items-center p-8">
-                {renderContent()}
+                {isDrawing ? (
+                    <DrawingCanvas onGenerate={handleGenerate} />
+                ) : (
+                    renderMainContent()
+                )}
+                {isUploading && (
+                    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+                        <div className="bg-white p-8 rounded-lg">
+                            <ImageUploader onImageUpload={handleImageUpload} />
+                        </div>
+                    </div>
+                )}
+                {isLoading && (
+                    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+                        <div className="text-xl font-semibold text-white">
+                            Generating your new look...
+                        </div>
+                    </div>
+                )}
             </main>
             <Footer />
         </div>

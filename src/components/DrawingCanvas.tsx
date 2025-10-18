@@ -3,14 +3,10 @@
 import React, { useRef, useEffect, useState } from "react";
 
 interface DrawingCanvasProps {
-    imageFile: File;
     onGenerate: (drawingDataUrl: string) => void;
 }
 
-const DrawingCanvas: React.FC<DrawingCanvasProps> = ({
-    imageFile,
-    onGenerate,
-}) => {
+const DrawingCanvas: React.FC<DrawingCanvasProps> = ({ onGenerate }) => {
     const backgroundCanvasRef = useRef<HTMLCanvasElement>(null);
     const drawingCanvasRef = useRef<HTMLCanvasElement>(null);
     const [isDrawing, setIsDrawing] = useState(false);
@@ -19,9 +15,8 @@ const DrawingCanvas: React.FC<DrawingCanvasProps> = ({
 
     useEffect(() => {
         const backgroundCtx = backgroundCanvasRef.current?.getContext("2d");
-        const drawingCtx = drawingCanvasRef.current?.getContext("2d");
         const img = new Image();
-        img.src = URL.createObjectURL(imageFile);
+        img.src = "/placeholder-clothing.svg";
         img.onload = () => {
             if (backgroundCanvasRef.current && drawingCanvasRef.current) {
                 const canvasWidth = 500;
@@ -36,7 +31,7 @@ const DrawingCanvas: React.FC<DrawingCanvasProps> = ({
                 backgroundCtx?.drawImage(img, 0, 0, canvasWidth, canvasHeight);
             }
         };
-    }, [imageFile]);
+    }, []);
 
     const startDrawing = (e: React.MouseEvent<HTMLCanvasElement>) => {
         const ctx = drawingCanvasRef.current?.getContext("2d");

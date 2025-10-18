@@ -3,6 +3,8 @@
 import React, { useState, useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 
+import Image from "next/image";
+
 interface ImageUploaderProps {
     onImageUpload: (file: File) => void;
 }
@@ -35,9 +37,11 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ onImageUpload }) => {
             >
                 <input {...getInputProps()} />
                 {preview ? (
-                    <img
+                    <Image
                         src={preview}
                         alt="Image preview"
+                        width={320}
+                        height={320}
                         className="max-w-full max-h-80 rounded-lg"
                     />
                 ) : (
