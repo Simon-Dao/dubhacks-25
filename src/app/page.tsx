@@ -28,7 +28,7 @@ export default function Home() {
         setIsDrawing(false);
 
         try {
-            const clothingResponse = await fetch("/api/generate-clothing", {
+            const clothingResponse = await fetch("/api/generate-image", {
                 method: "POST",
                 body: JSON.stringify({ drawing: drawingDataUrl }),
             });
