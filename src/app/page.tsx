@@ -7,6 +7,7 @@ import ImageUploader from "../components/ImageUploader";
 import DrawingCanvas from "../components/DrawingCanvas";
 import ResultsDisplay from "../components/ResultsDisplay";
 import { Product } from "../components/ProductCard";
+import Shittyui from "./ImageGenerator";
 
 type AppState = "UPLOAD" | "DRAW" | "RESULTS";
 
@@ -26,11 +27,11 @@ export default function Home() {
 
     const handleGenerate = async (drawingDataUrl: string) => {
         if (!userImage) return;
-
+            
         setIsLoading(true);
 
         try {
-            const clothingResponse = await fetch("/api/generate-clothing", {
+            const clothingResponse = await fetch("/api/generate-image", {
                 method: "POST",
                 body: JSON.stringify({ drawing: drawingDataUrl }),
             });
@@ -93,7 +94,9 @@ export default function Home() {
         <div className="flex flex-col min-h-screen bg-gray-50">
             <Header />
             <main className="flex-grow flex flex-col justify-center items-center p-8">
-                {renderContent()}
+                
+                <Shittyui />
+                {/* {renderContent()} */}
             </main>
             <Footer />
         </div>
