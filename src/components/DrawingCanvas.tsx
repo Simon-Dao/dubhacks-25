@@ -3,7 +3,7 @@
 import React, { useRef, useEffect, useState } from "react";
 
 interface DrawingCanvasProps {
-    onGenerate: (drawingDataUrl: string) => void;
+    onGenerate: (drawingDataUrl: Blob | null) => void;
 }
 
 const DrawingCanvas: React.FC<DrawingCanvasProps> = ({ onGenerate }) => {
@@ -64,8 +64,7 @@ const DrawingCanvas: React.FC<DrawingCanvasProps> = ({ onGenerate }) => {
     };
 
     const handleGenerate = () => {
-        const drawingDataUrl = drawingCanvasRef.current?.toDataURL() || "";
-        onGenerate(drawingDataUrl);
+        drawingCanvasRef.current?.toBlob(onGenerate, "image/png");
     };
 
     return (

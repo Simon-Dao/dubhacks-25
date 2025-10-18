@@ -8,7 +8,9 @@ const ImageGenerator: React.FC = () => {
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string>("");
 
-    const onSubmit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
+    const onSubmit = async (
+        e: React.FormEvent<HTMLFormElement>,
+    ): Promise<void> => {
         e.preventDefault();
         const form = new FormData(e.currentTarget);
 
@@ -21,7 +23,7 @@ const ImageGenerator: React.FC = () => {
         try {
             const res = await fetch("/api/generate-image", {
                 method: "POST",
-                body: form
+                body: form,
             });
 
             if (!res.ok) {
@@ -42,10 +44,14 @@ const ImageGenerator: React.FC = () => {
 
     return (
         <form onSubmit={onSubmit}>
-
             <label>
                 Image
-                <input name="image" type="file" accept="image/png,image/jpeg" required />
+                <input
+                    name="image"
+                    type="file"
+                    accept="image/png,image/jpeg"
+                    required
+                />
             </label>
 
             <textarea
