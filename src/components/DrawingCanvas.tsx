@@ -7,28 +7,25 @@ interface DrawingCanvasProps {
 }
 
 const DrawingCanvas: React.FC<DrawingCanvasProps> = ({ onGenerate }) => {
-    const backgroundCanvasRef = useRef<HTMLCanvasElement>(null);
     const drawingCanvasRef = useRef<HTMLCanvasElement>(null);
     const [isDrawing, setIsDrawing] = useState(false);
     const [brushColor, setBrushColor] = useState("#000000");
     const [brushSize, setBrushSize] = useState(10);
 
     useEffect(() => {
-        const backgroundCtx = backgroundCanvasRef.current?.getContext("2d");
+        const drawingCtx = drawingCanvasRef.current?.getContext("2d");
         const img = new Image();
         img.src = "/placeholder-clothing.svg";
         img.onload = () => {
-            if (backgroundCanvasRef.current && drawingCanvasRef.current) {
+            if (drawingCanvasRef.current) {
                 const canvasWidth = 500;
                 const scale = canvasWidth / img.width;
                 const canvasHeight = img.height * scale;
 
-                backgroundCanvasRef.current.width = canvasWidth;
-                backgroundCanvasRef.current.height = canvasHeight;
                 drawingCanvasRef.current.width = canvasWidth;
                 drawingCanvasRef.current.height = canvasHeight;
 
-                backgroundCtx?.drawImage(img, 0, 0, canvasWidth, canvasHeight);
+                drawingCtx?.drawImage(img, 0, 0, canvasWidth, canvasHeight);
             }
         };
     }, []);
@@ -71,10 +68,6 @@ const DrawingCanvas: React.FC<DrawingCanvasProps> = ({ onGenerate }) => {
         <div className="flex flex-col items-center gap-4">
             <div className="w-[500px] h-[500px] border border-gray-300 rounded-lg overflow-hidden">
                 <div className="relative w-full h-full">
-                    <canvas
-                        ref={backgroundCanvasRef}
-                        className="absolute top-0 left-0 w-full z-10"
-                    />
                     <canvas
                         ref={drawingCanvasRef}
                         className="absolute top-0 left-0 w-full z-20 cursor-crosshair"

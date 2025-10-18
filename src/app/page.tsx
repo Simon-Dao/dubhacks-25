@@ -31,8 +31,7 @@ export default function Home() {
             const generateClothingFormData = new FormData();
             generateClothingFormData.append(
                 "image",
-                drawingBlob!,
-                "drawing.png",
+                new File([drawingBlob!], "drawing.png", { type: "image/png" }),
             );
             generateClothingFormData.append(
                 "prompt",
