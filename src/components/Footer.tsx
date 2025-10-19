@@ -4,7 +4,7 @@ const Footer = () => {
     return (
         <footer className="w-full p-4 bg-gray-100 text-center border-t border-gray-200 mt-auto">
             <p className="text-gray-600">
-                &copy; 2025 AI Clothing Stylist. All rights reserved.
+                DubHacks'25
             </p>
         </footer>
     );
