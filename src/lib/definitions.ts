@@ -12,3 +12,15 @@ export interface Project {
   name: string;
   imageUrl: string;
 }
+
+export interface InlineImage {
+  link: string;
+  source: string;
+  thumbnail: string;
+  title: string;
+}
+
+export interface SerpApiResponse {
+  inline_images?: InlineImage[];
+  [key: string]: any;
+}
