@@ -1,12 +1,13 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { ImageOnModel } from "@/lib/definitions";
 import ImageUploader from "@/components/ImageUploader";
 import ResultsDisplay from "@/components/workspace/ResultsDisplay";
 import Header from "@/components/Header";
 import DrawingCanvas from "@/components/workspace/DrawingCanvas";
 import Footer from "@/components/Footer";
+import RenderStatus from "@/components/workspace/RenderStatus";
 
 export default function Workspace() {
     const [userImage, setUserImage] = useState<File | null>(null);
@@ -18,14 +19,19 @@ export default function Workspace() {
     const [isDrawing, setIsDrawing] = useState(false);
     const [isUploading, setIsUploading] = useState(false);
 
+    const addRenderItem = useRef<() => void>(null);
+    const removeRenderItem = useRef<() => void>(null);
+
     const handleImageUpload = (file: File) => {
         setUserImage(file);
         setIsUploading(false);
     };
 
     const handleGenerate = async (drawingBlob: Blob | null) => {
+        if (isLoading) return;
         setIsLoading(true);
         setIsDrawing(false);
+        addRenderItem.current!();
 
         try {
             const generateClothingFormData = new FormData();
@@ -64,6 +70,7 @@ export default function Workspace() {
             console.error("Failed to generate results:", error);
         } finally {
             setIsLoading(false);
+            removeRenderItem.current!();
         }
     };
 
@@ -81,6 +88,8 @@ export default function Workspace() {
                     setDroppedClothing={setDroppedClothing}
                     onChangePhoto={() => setIsUploading(true)}
                     openDrawingPanel={() => setIsDrawing(true)}
+                    addRenderItem={addRenderItem}
+                    removeRenderItem={removeRenderItem}
                 />
             </div>
         );
@@ -102,15 +111,13 @@ export default function Workspace() {
                         </div>
                     </div>
                 )}
-                {isLoading && (
-                    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-                        <div className="text-xl font-semibold text-white">
-                            Generating your new look...
-                        </div>
-                    </div>
-                )}
             </main>
             <Footer />
+
+            <RenderStatus
+                addItem={addRenderItem}
+                removeItem={removeRenderItem}
+            />
         </div>
     );
 }

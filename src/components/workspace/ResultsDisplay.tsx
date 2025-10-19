@@ -30,6 +30,8 @@ interface ResultsDisplayProps {
     setDroppedClothing: Dispatch<SetStateAction<ImageOnModel[]>>;
     onChangePhoto: () => void;
     openDrawingPanel: () => void;
+    addRenderItem: React.RefObject<(() => void) | null>;
+    removeRenderItem: React.RefObject<(() => void) | null>;
 }
 
 const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
@@ -39,6 +41,8 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
     setDroppedClothing,
     onChangePhoto,
     openDrawingPanel,
+    addRenderItem,
+    removeRenderItem,
 }) => {
     const [activeId, setActiveId] = useState<string | null>(null);
 
@@ -56,6 +60,7 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
     const handleRender = async () => {
         if (isRendering) return;
         setIsRendering(true);
+        addRenderItem.current!();
 
         try {
             const renderFormData = new FormData();
@@ -102,6 +107,7 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
             console.error("Failed to generate results:", error);
         } finally {
             setIsRendering(false);
+            removeRenderItem.current!();
         }
     };
 
