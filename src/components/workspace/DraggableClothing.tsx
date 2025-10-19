@@ -38,7 +38,7 @@ const DraggableClothing: React.FC<DraggableClothingProps> = ({ id, url }) => {
                 />
             </div>
 
-            <button
+            {/*<button
                 className={
                     saved
                         ? "bg-green-600 "
@@ -48,7 +48,7 @@ const DraggableClothing: React.FC<DraggableClothingProps> = ({ id, url }) => {
                 onClick={onclick}
             >
                 {saved ? "saved" : "save"}
-            </button>
+            </button>*/}
         </div>
     );
 };
