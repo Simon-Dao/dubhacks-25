@@ -56,14 +56,14 @@ export default function RenderedImageModal({
                                         a.href = imageURL;
                                         a.click();
                                     }}
-                                    className="inline-flex w-full justify-center rounded-md bg-blue-500 px-4 py-3 text-md font-semibold text-white hover:bg-blue-400 sm:ml-3 sm:w-auto"
+                                    className="inline-flex w-full justify-center rounded-md bg-blue-500 px-3 py-2 md:px-4 md:py-3 text-sm md:text-md font-semibold text-white hover:bg-blue-400 sm:ml-3 w-min m:w-auto"
                                 >
                                     Save
                                 </button>
                                 <button
                                     type="button"
                                     onClick={() => onClose()}
-                                    className="inline-flex w-full justify-center rounded-md bg-red-500 px-4 py-3 text-md font-semibold text-white hover:bg-red-400 sm:ml-3 sm:w-auto"
+                                    className="inline-flex w-full justify-center rounded-md bg-red-500 px-3 py-2 md:px-4 md:py-3 text-sm md:text-md font-semibold text-white hover:bg-red-400 sm:ml-3 w-min sm:w-auto"
                                 >
                                     Close
                                 </button>
