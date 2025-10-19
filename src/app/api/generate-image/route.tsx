@@ -7,10 +7,10 @@ const openai = new OpenAI({
 export async function POST(req: Request): Promise<Response> {
     try {
         const form = await req.formData();
-        const file = form.get("image") as File | null;
+        const file = form.getAll("image") as File[];
         const prompt = (form.get("prompt") as string) ?? "Enhance this outfit";
 
-        if (!file) {
+        if (file.length === 0) {
             return new Response(
                 JSON.stringify({ error: "Missing 'image' file" }),
                 { status: 400 },

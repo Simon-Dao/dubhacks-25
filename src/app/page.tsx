@@ -7,12 +7,14 @@ import ImageUploader from "../components/ImageUploader";
 import DrawingCanvas from "../components/DrawingCanvas";
 import ResultsDisplay from "../components/ResultsDisplay";
 import { Product } from "../components/ProductCard";
+import { ImageOnModel } from "@/lib/definitions";
 
 export default function Home() {
     const [userImage, setUserImage] = useState<File | null>(null);
     const [generatedClothing, setGeneratedClothing] = useState<
-        { id: string; url: string }[]
+        { id: string; url: string; blob: Blob }[]
     >([]);
+    const [droppedClothing, setDroppedClothing] = useState<ImageOnModel[]>([]);
     const [products, setProducts] = useState<Product[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [isDrawing, setIsDrawing] = useState(false);
@@ -54,7 +56,11 @@ export default function Home() {
 
             setGeneratedClothing((prev) => [
                 ...prev,
-                { id: Date.now().toString(), url: URL.createObjectURL(blob) },
+                {
+                    id: Date.now().toString(),
+                    url: URL.createObjectURL(blob),
+                    blob,
+                },
             ]);
 
             const searchResponse = await fetch("/api/reverse-image-search", {
@@ -91,6 +97,8 @@ export default function Home() {
                     originalImage={userImage}
                     generatedClothing={generatedClothing}
                     products={products}
+                    droppedClothing={droppedClothing}
+                    setDroppedClothing={setDroppedClothing}
                     onChangePhoto={() => setIsUploading(true)}
                 />
             </div>
