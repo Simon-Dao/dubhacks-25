@@ -26,6 +26,7 @@ interface DrawingCanvasProps {
 const DrawingCanvas: React.FC<DrawingCanvasProps> = ({ onGenerate }) => {
     const drawingCanvasRef = useRef<HTMLCanvasElement>(null);
     const [isDrawing, setIsDrawing] = useState(false);
+    const [isErasing, setIsErasing] = useState(false);
     const [brushColor, setBrushColor] = useState("#000000");
     const [brushSize, setBrushSize] = useState(10);
 
@@ -123,6 +124,15 @@ const DrawingCanvas: React.FC<DrawingCanvasProps> = ({ onGenerate }) => {
             ctx.lineWidth = brushSize;
             ctx.lineCap = "round";
             ctx.lineJoin = "round";
+
+            if (isErasing) {
+                ctx.globalCompositeOperation = "source-over";
+                ctx.strokeStyle = "#ffffff";
+            } else {
+                ctx.globalCompositeOperation = "source-over";
+                ctx.strokeStyle = brushColor;
+            }
+
             ctx.stroke();
         }
     };
@@ -220,6 +230,14 @@ const DrawingCanvas: React.FC<DrawingCanvasProps> = ({ onGenerate }) => {
                         }
                     />
                 </div>
+                <button
+                    onClick={() => setIsErasing(!isErasing)}
+                    className={`px-4 py-2 rounded-md transition-colors ${
+                        isErasing ? "bg-white-600 text-white" : "bg-gray-400 text-black"
+                    }`}
+                >
+                <svg fill="none" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M15.8698 2.66878L20.8384 7.6373C21.717 8.51598 21.717 9.9406 20.8384 10.8193L12.1566 19.4998L18.2544 19.5C18.6341 19.5 18.9479 19.7821 18.9976 20.1482L19.0044 20.25C19.0044 20.6297 18.7223 20.9435 18.3562 20.9931L18.2544 21L9.84443 21.0012C9.22822 21.0348 8.60082 20.8163 8.1301 20.3456L3.16157 15.377C2.28289 14.4984 2.28289 13.0737 3.16157 12.1951L12.6879 2.66878C13.5665 1.7901 14.9912 1.7901 15.8698 2.66878ZM5.70856 11.7678L4.22223 13.2557C3.92934 13.5486 3.92934 14.0235 4.22223 14.3164L9.19076 19.2849C9.33721 19.4314 9.52915 19.5046 9.72109 19.5046L9.74997 19.5L9.78846 19.5016C9.95737 19.4864 10.1221 19.4142 10.2514 19.2849L11.7376 17.7978L5.70856 11.7678ZM13.7485 3.72944L6.76956 10.7068L12.7986 16.7368L19.7777 9.75862C20.0706 9.46573 20.0706 8.99085 19.7777 8.69796L14.8092 3.72944C14.5163 3.43654 14.0414 3.43654 13.7485 3.72944Z" fill="#212121"/></svg>
+                </button>
                 <button
                     onClick={handleGenerate}
                     className="px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors"
