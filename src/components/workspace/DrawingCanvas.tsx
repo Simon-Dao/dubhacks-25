@@ -1,6 +1,23 @@
 "use client";
 
 import React, { useRef, useEffect, useState } from "react";
+import {
+    Listbox,
+    ListboxButton,
+    ListboxOption,
+    ListboxOptions,
+} from "@headlessui/react";
+import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
+import ButtonDown from "../../../public/templates/button-down.png";
+import CroppedShirt from "../../../public/templates/cropped-shirt.png";
+import Dress from "../../../public/templates/dress.png";
+import Hoodie from "../../../public/templates/hoodie.png";
+import Jacket from "../../../public/templates/jacket.png";
+import Pants from "../../../public/templates/pants.png";
+import Skirt from "../../../public/templates/skirt.png";
+import Sneaker from "../../../public/templates/sneaker.png";
+import TShirt from "../../../public/templates/t-shirt.png";
+import TankTop from "../../../public/templates/tank.png";
 
 interface DrawingCanvasProps {
     onGenerate: (drawingDataUrl: Blob | null) => void;
@@ -12,23 +29,81 @@ const DrawingCanvas: React.FC<DrawingCanvasProps> = ({ onGenerate }) => {
     const [brushColor, setBrushColor] = useState("#000000");
     const [brushSize, setBrushSize] = useState(10);
 
+    const templates = [
+        {
+            name: "Button Down",
+            img: ButtonDown,
+        },
+        {
+            name: "Cropped Shirt",
+            img: CroppedShirt,
+        },
+        {
+            name: "Dress",
+            img: Dress,
+        },
+        {
+            name: "Hoodie",
+            img: Hoodie,
+        },
+        {
+            name: "Jacket",
+            img: Jacket,
+        },
+        {
+            name: "Pants",
+            img: Pants,
+        },
+        {
+            name: "Skirt",
+            img: Skirt,
+        },
+        {
+            name: "Sneaker",
+            img: Sneaker,
+        },
+        {
+            name: "T-Shirt",
+            img: TShirt,
+        },
+        {
+            name: "Tank Top",
+            img: TankTop,
+        },
+        {
+            name: "No Template",
+            img: null,
+        },
+    ];
+    const [selectedTemplate, setSelectedTemplate] = useState(templates[0]);
+
     useEffect(() => {
         const drawingCtx = drawingCanvasRef.current?.getContext("2d");
-        const img = new Image();
-        img.src = "/placeholder-clothing.svg";
-        img.onload = () => {
+        if (selectedTemplate.img) {
+            const img = new Image();
+            img.src = selectedTemplate.img.src;
+            img.onload = () => {
+                if (drawingCanvasRef.current) {
+                    const canvasWidth = 500;
+                    const scale = canvasWidth / img.width;
+                    const canvasHeight = img.height * scale;
+
+                    drawingCanvasRef.current.width = canvasWidth;
+                    drawingCanvasRef.current.height = canvasHeight;
+
+                    drawingCtx?.drawImage(img, 0, 0, canvasWidth, canvasHeight);
+                }
+            };
+        } else {
             if (drawingCanvasRef.current) {
                 const canvasWidth = 500;
-                const scale = canvasWidth / img.width;
-                const canvasHeight = img.height * scale;
+                const canvasHeight = 500;
 
                 drawingCanvasRef.current.width = canvasWidth;
                 drawingCanvasRef.current.height = canvasHeight;
-
-                drawingCtx?.drawImage(img, 0, 0, canvasWidth, canvasHeight);
             }
-        };
-    }, []);
+        }
+    }, [selectedTemplate]);
 
     const startDrawing = (e: React.MouseEvent<HTMLCanvasElement>) => {
         const ctx = drawingCanvasRef.current?.getContext("2d");
@@ -66,6 +141,46 @@ const DrawingCanvas: React.FC<DrawingCanvasProps> = ({ onGenerate }) => {
 
     return (
         <div className="flex flex-col items-center gap-4">
+            <Listbox value={selectedTemplate} onChange={setSelectedTemplate}>
+                <div className="relative mt-2 p-2 min-w-[175px]">
+                    <ListboxButton className="grid w-full cursor-default grid-cols-1 rounded-md bg-gray-300/50 py-1.5 pr-2 pl-3 text-left outline-1 -outline-offset-1 outline-white/10 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-indigo-500 sm:text-sm/6">
+                        <span className="col-start-1 row-start-1 flex items-center gap-3 pr-6">
+                            <span className="block truncate">
+                                {selectedTemplate.name}
+                            </span>
+                        </span>
+                        <ChevronUpDownIcon
+                            aria-hidden="true"
+                            className="col-start-1 row-start-1 size-5 self-center justify-self-end text-gray-800 sm:size-4"
+                        />
+                    </ListboxButton>
+
+                    <ListboxOptions
+                        transition
+                        className="absolute z-30 mt-1 max-h-56 w-full overflow-auto rounded-md bg-gray-100 py-1 text-base outline-1 -outline-offset-1 outline-white/10 data-leave:transition data-leave:duration-100 data-leave:ease-in data-closed:data-leave:opacity-0 sm:text-sm"
+                    >
+                        {templates.map((template) => (
+                            <ListboxOption
+                                key={template.name}
+                                value={template}
+                                className="group relative cursor-default py-2 pr-9 pl-3 select-none data-focus:bg-indigo-500 data-focus:outline-hidden"
+                            >
+                                <span className="ml-3 block truncate font-normal group-data-selected:font-semibold">
+                                    {template.name}
+                                </span>
+
+                                <span className="absolute inset-y-0 right-0 flex items-center pr-4 text-indigo-400 group-not-data-selected:hidden group-data-focus:text-white">
+                                    <CheckIcon
+                                        aria-hidden="true"
+                                        className="size-5"
+                                    />
+                                </span>
+                            </ListboxOption>
+                        ))}
+                    </ListboxOptions>
+                </div>
+            </Listbox>
+
             <div className="w-[500px] h-[500px] border border-gray-300 rounded-lg overflow-hidden">
                 <div className="relative w-full h-full">
                     <canvas
