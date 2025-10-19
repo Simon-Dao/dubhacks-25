@@ -9,7 +9,7 @@ type Tab = "outfits" | "items";
 
 // Presentational subcomponents
 const Outfit: React.FC<{ outfit: string }> = ({ outfit }) => {
-  return <div className="rounded-xl border p-3 bg-white shadow-sm">{outfit}</div>;
+  return <div className="rounded-xl border p-10 m-2 bg-white shadow-sm">{outfit}</div>;
 };
 
 const Item: React.FC<{ item: string }> = ({ item }) => {
@@ -18,8 +18,8 @@ const Item: React.FC<{ item: string }> = ({ item }) => {
 
 export default function Gallery() {
   // temp data — keep as empty by default; populate from props or API later
-  const [outfits, setOutfits] = useState<string[]>([]);
-  const [items, setItems] = useState<string[]>([]);
+  const [outfits, setOutfits] = useState<string[]>(["a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a","a"]);
+  const [items, setItems] = useState<string[]>(["b"]);
 
   const [currentTab, setCurrentTab] = useState<Tab>("outfits");
 
@@ -61,7 +61,7 @@ export default function Gallery() {
         </div>
 
         {/* Content list */}
-        <ul className="grid w-full max-w-3xl grid-cols-1 gap-3 sm:grid-cols-2">
+        <ul className="flex flex-wrap w-full max-w-[800px] overflow-x-scroll">
           {currentTab === "outfits"
             ? outfits.map((outfit, index) => (
                 <li key={`outfit-${index}`}>
