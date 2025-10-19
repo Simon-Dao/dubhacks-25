@@ -25,6 +25,7 @@ import { PlusIcon } from "@heroicons/react/24/solid";
 
 interface ResultsDisplayProps {
     originalImage: File;
+    setOriginalImage: Dispatch<SetStateAction<File | null>>;
     generatedClothing: { id: string; url: string; blob: Blob }[];
     droppedClothing: ImageOnModel[];
     setDroppedClothing: Dispatch<SetStateAction<ImageOnModel[]>>;
@@ -36,6 +37,7 @@ interface ResultsDisplayProps {
 
 const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
     originalImage,
+    setOriginalImage,
     generatedClothing,
     droppedClothing,
     setDroppedClothing,
@@ -102,6 +104,8 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
             const dataURL = URL.createObjectURL(blob);
 
             setRenderedImage(dataURL);
+            setOriginalImage(new File([blob], "model-rendered.png", { type: blob.type }));
+            setDroppedClothing([]);
             setImageModalOpen(true);
         } catch (error) {
             console.error("Failed to generate results:", error);

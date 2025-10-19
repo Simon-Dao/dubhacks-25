@@ -83,6 +83,7 @@ export default function Workspace() {
             <div className="w-full">
                 <ResultsDisplay
                     originalImage={userImage}
+                    setOriginalImage={setUserImage}
                     generatedClothing={generatedClothing}
                     droppedClothing={droppedClothing}
                     setDroppedClothing={setDroppedClothing}
