@@ -21,6 +21,7 @@ import DraggableClothing from "./DraggableClothing";
 import Image from "next/image";
 import { ImageOnModel } from "@/lib/definitions";
 import { renderToBlob } from "@/lib/imageRenderer";
+import RenderedImageModal from "@/components/RenderedImageModal";
 
 interface ResultsDisplayProps {
     originalImage: File;
@@ -48,6 +49,9 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
     const mainImageRef = useRef<HTMLDivElement>(null);
 
     const [isRendering, setIsRendering] = useState(false);
+
+    const [renderedImage, setRenderedImage] = useState<string | null>(null);
+    const [imageModalOpen, setImageModalOpen] = useState<boolean>(false);
 
     const handleRender = async () => {
         if (isRendering) return;
@@ -90,7 +94,10 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
             }
 
             const blob = await clothingResponse.blob();
-            console.log("rendered", blob);
+            const dataURL = URL.createObjectURL(blob);
+
+            setRenderedImage(dataURL);
+            setImageModalOpen(true);
         } catch (error) {
             console.error("Failed to generate results:", error);
         } finally {
@@ -142,52 +149,65 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
     }
 
     return (
-        <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
-            <div className="w-full p-2 lg:p-8 mx-auto">
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    <MainImage
-                        mainImageRef={mainImageRef}
-                        originalImage={originalImage}
-                        droppedClothing={droppedClothing}
-                        onChangePhoto={onChangePhoto}
-                        onRenderPhoto={handleRender}
-                    />
-                    <div>
-                        <h2 className="text-2xl font-bold mb-4">
-                            Generated Clothing
+        <>
+            <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
+                <div className="w-full p-2 lg:p-8 mx-auto">
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        <MainImage
+                            mainImageRef={mainImageRef}
+                            originalImage={originalImage}
+                            droppedClothing={droppedClothing}
+                            onChangePhoto={onChangePhoto}
+                            onRenderPhoto={handleRender}
+                        />
+                        <div>
+                            <h2 className="text-2xl font-bold mb-4">
+                                Generated Clothing
+                            </h2>
+                            <div className="grid grid-cols-2 gap-4 bg-gray-100 p-4 rounded-lg max-h-96 overflow-y-auto">
+                                {generatedClothing.map((item) => (
+                                    <DraggableClothing
+                                        key={item.id}
+                                        id={item.id}
+                                        url={item.url}
+                                    />
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="mt-12 text-center">
+                        <h2 className="text-3xl font-bold mb-6">
+                            Shop Similar Styles
                         </h2>
-                        <div className="grid grid-cols-2 gap-4 bg-gray-100 p-4 rounded-lg max-h-96 overflow-y-auto">
-                            {generatedClothing.map((item) => (
-                                <DraggableClothing
-                                    key={item.id}
-                                    id={item.id}
-                                    url={item.url}
+                        <div className="flex justify-center gap-8 flex-wrap">
+                            {products.map((product) => (
+                                <ProductCard
+                                    key={product.id}
+                                    product={product}
                                 />
                             ))}
                         </div>
                     </div>
                 </div>
+                <DragOverlay>
+                    {activeId ? (
+                        <DraggableClothing
+                            id={activeId}
+                            url={activeClothing?.url ?? ""}
+                        />
+                    ) : null}
+                </DragOverlay>
+            </DndContext>
 
-                <div className="mt-12 text-center">
-                    <h2 className="text-3xl font-bold mb-6">
-                        Shop Similar Styles
-                    </h2>
-                    <div className="flex justify-center gap-8 flex-wrap">
-                        {products.map((product) => (
-                            <ProductCard key={product.id} product={product} />
-                        ))}
-                    </div>
-                </div>
-            </div>
-            <DragOverlay>
-                {activeId ? (
-                    <DraggableClothing
-                        id={activeId}
-                        url={activeClothing?.url ?? ""}
-                    />
-                ) : null}
-            </DragOverlay>
-        </DndContext>
+            {renderedImage != null && (
+                <RenderedImageModal
+                    open={imageModalOpen}
+                    onClose={() => setImageModalOpen(false)}
+                    imageURL={renderedImage}
+                />
+            )}
+        </>
     );
 };
 
