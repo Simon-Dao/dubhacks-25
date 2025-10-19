@@ -23,24 +23,45 @@ export default function Home() {
         setIsUploading(false);
     };
 
-    const handleGenerate = async (drawingDataUrl: string) => {
+    const handleGenerate = async (drawingBlob: Blob | null) => {
         setIsLoading(true);
         setIsDrawing(false);
 
         try {
-            const clothingResponse = await fetch("/api/generate-clothing", {
+            const generateClothingFormData = new FormData();
+            generateClothingFormData.append(
+                "image",
+                new File([drawingBlob!], "drawing.png", { type: "image/png" }),
+            );
+            generateClothingFormData.append(
+                "prompt",
+                "Turn this sketch of a piece of clothing into a realistic image, no background.",
+            );
+
+            const clothingResponse = await fetch("/api/generate-image", {
                 method: "POST",
-                body: JSON.stringify({ drawing: drawingDataUrl }),
+                body: generateClothingFormData,
             });
-            const { generatedClothingUrl } = await clothingResponse.json();
+
+            if (!clothingResponse.ok) {
+                const data = await clothingResponse.json().catch(() => ({}));
+                throw new Error(
+                    data.error || `HTTP ${clothingResponse.status}`,
+                );
+            }
+
+            const blob = await clothingResponse.blob();
+
             setGeneratedClothing((prev) => [
                 ...prev,
-                { id: Date.now().toString(), url: generatedClothingUrl },
+                { id: Date.now().toString(), url: URL.createObjectURL(blob) },
             ]);
 
             const searchResponse = await fetch("/api/reverse-image-search", {
                 method: "POST",
-                body: JSON.stringify({ clothingImage: generatedClothingUrl }),
+                body: JSON.stringify({
+                    clothingImage: URL.createObjectURL(blob),
+                }),
             });
             const { products } = await searchResponse.json();
             setProducts(products);

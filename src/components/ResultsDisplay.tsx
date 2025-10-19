@@ -28,7 +28,7 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
     onChangePhoto,
 }) => {
     const [droppedClothing, setDroppedClothing] = useState<
-        { url: string; x: number; y: number }[]
+        { url: string; x: number; y: number; width: number }[]
     >([]);
     const [activeId, setActiveId] = useState<string | null>(null);
 
@@ -43,7 +43,7 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
     }
 
     function handleDragEnd(event: DragEndEvent) {
-        const { active, over, delta } = event;
+        const { active, over } = event;
 
         if (
             active?.rect?.current?.translated &&
@@ -64,11 +64,15 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
                     ((active.rect.current.translated.top - droppableRect.top) /
                         droppableRect.height) *
                     100;
+                const width =
+                    (active.rect.current.translated.width /
+                        droppableRect.width) *
+                    100;
 
                 if (x >= 0 && x <= 100 && y >= 0 && y <= 100) {
                     setDroppedClothing((prev) => [
                         ...prev,
-                        { url: clothingUrl, x, y },
+                        { url: clothingUrl, x, y, width },
                     ]);
                 }
             }
@@ -128,7 +132,7 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
 
 function MainImage(props: {
     originalImage: File;
-    droppedClothing: { url: string; x: number; y: number }[];
+    droppedClothing: { url: string; x: number; y: number; width: number }[];
     onChangePhoto: () => void;
     mainImageRef: React.RefObject<HTMLDivElement | null>;
 }) {
@@ -145,40 +149,40 @@ function MainImage(props: {
     );
 
     return (
-        <div
-            className="lg:col-span-2 p-4 bg-gray-50 shadow-xl rounded-xl"
-            ref={setNodeRefWrapped}
-        >
-            <div className="relative border border-gray-300 rounded-lg overflow-hidden">
-                <Image
-                    className="w-full h-auto object-contain"
-                    src={
-                        props.originalImage
-                            ? URL.createObjectURL(props.originalImage)
-                            : "https://placehold.co/800x800/e0e0e0/000000?text=Upload+Base+Image"
-                    }
-                    alt="Original user upload"
-                    width={800}
-                    height={800}
-                />
+        <div className="lg:col-span-2 p-4 bg-gray-50 shadow-xl rounded-xl">
+            {/* This element needs to have the same size as the parent of the images, since it's used for dnd calculation. */}
+            <div ref={setNodeRefWrapped}>
+                <div className="relative border border-gray-300 rounded-lg overflow-hidden">
+                    <Image
+                        className="w-full h-auto object-contain"
+                        src={
+                            props.originalImage
+                                ? URL.createObjectURL(props.originalImage)
+                                : "https://placehold.co/800x800/e0e0e0/000000?text=Upload+Base+Image"
+                        }
+                        alt="Original user upload"
+                        width={800}
+                        height={800}
+                    />
 
-                {props.droppedClothing &&
-                    props.droppedClothing.map((clothing, index) => (
-                        <Image
-                            key={index}
-                            src={clothing.url}
-                            alt="Dropped clothing"
-                            className="absolute object-contain pointer-events-none"
-                            style={{
-                                left: `${clothing.x}%`,
-                                top: `${clothing.y}%`,
-                                width: "20%",
-                                height: "auto",
-                            }}
-                            width={150}
-                            height={150}
-                        />
-                    ))}
+                    {props.droppedClothing &&
+                        props.droppedClothing.map((clothing, index) => (
+                            <Image
+                                key={index}
+                                src={clothing.url}
+                                alt="Dropped clothing"
+                                className="absolute object-contain pointer-events-none"
+                                style={{
+                                    left: `${clothing.x}%`,
+                                    top: `${clothing.y}%`,
+                                    width: `${clothing.width}%`,
+                                    height: "auto",
+                                }}
+                                width={150}
+                                height={150}
+                            />
+                        ))}
+                </div>
             </div>
 
             <div className="flex justify-center mt-4">
