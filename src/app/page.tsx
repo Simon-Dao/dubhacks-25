@@ -13,9 +13,11 @@ export default function Main() {
     }, [userId]); // runs only when userId becomes available
 
     useEffect(() => {
-        if(!userId) {
-            if(sessionStorage.getItem("userId")) {
-                useLocalState.getState().setUserId(localStorage.getItem("userId"));
+        if (!userId) {
+            if (sessionStorage.getItem("userId")) {
+                useLocalState
+                    .getState()
+                    .setUserId(localStorage.getItem("userId"));
             }
         }
     }, []);
