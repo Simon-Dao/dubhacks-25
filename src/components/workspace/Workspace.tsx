@@ -101,7 +101,10 @@ export default function Workspace() {
             <Header />
             <main className="flex-grow flex flex-col justify-center items-center p-8">
                 {isDrawing ? (
-                    <DrawingCanvas setWorkspaceIsDrawing={setIsDrawing} onGenerate={handleGenerate} />
+                    <DrawingCanvas
+                        setWorkspaceIsDrawing={setIsDrawing}
+                        onGenerate={handleGenerate}
+                    />
                 ) : (
                     renderMainContent()
                 )}

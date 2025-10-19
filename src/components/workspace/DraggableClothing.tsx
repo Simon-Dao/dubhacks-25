@@ -19,8 +19,7 @@ const DraggableClothing: React.FC<DraggableClothingProps> = ({ id, url }) => {
         data: { url },
     });
 
-    async function onclick() {
-    }
+    async function onclick() {}
 
     return (
         <div>

@@ -104,7 +104,9 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
             const dataURL = URL.createObjectURL(blob);
 
             setRenderedImage(dataURL);
-            setOriginalImage(new File([blob], "model-rendered.png", { type: blob.type }));
+            setOriginalImage(
+                new File([blob], "model-rendered.png", { type: blob.type }),
+            );
             setDroppedClothing([]);
             setImageModalOpen(true);
         } catch (error) {
