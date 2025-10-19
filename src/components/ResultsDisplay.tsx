@@ -1,6 +1,12 @@
 "use client";
 
-import React, { useCallback, useRef, useState } from "react";
+import React, {
+    Dispatch,
+    SetStateAction,
+    useCallback,
+    useRef,
+    useState,
+} from "react";
 
 import ProductCard, { Product } from "./ProductCard";
 import {
@@ -13,11 +19,15 @@ import {
 
 import DraggableClothing from "./DraggableClothing";
 import Image from "next/image";
+import { ImageOnModel } from "@/lib/definitions";
+import { renderToBlob } from "@/lib/imageRenderer";
 
 interface ResultsDisplayProps {
     originalImage: File;
-    generatedClothing: { id: string; url: string }[];
+    generatedClothing: { id: string; url: string; blob: Blob }[];
     products: Product[];
+    droppedClothing: ImageOnModel[];
+    setDroppedClothing: Dispatch<SetStateAction<ImageOnModel[]>>;
     onChangePhoto: () => void;
 }
 
@@ -25,11 +35,10 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
     originalImage,
     generatedClothing,
     products,
+    droppedClothing,
+    setDroppedClothing,
     onChangePhoto,
 }) => {
-    const [droppedClothing, setDroppedClothing] = useState<
-        { url: string; x: number; y: number; width: number }[]
-    >([]);
     const [activeId, setActiveId] = useState<string | null>(null);
 
     const activeClothing = activeId
@@ -37,6 +46,57 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
         : null;
 
     const mainImageRef = useRef<HTMLDivElement>(null);
+
+    const [isRendering, setIsRendering] = useState(false);
+
+    const handleRender = async () => {
+        if (isRendering) return;
+        setIsRendering(true);
+
+        try {
+            const renderFormData = new FormData();
+
+            renderFormData.append(
+                "image",
+                new File([originalImage!], "model.png", { type: "image/png" }),
+            );
+
+            const renderedCanvas = await renderToBlob(
+                originalImage,
+                droppedClothing,
+            );
+            renderFormData.append(
+                "image",
+                new File([renderedCanvas!], "model-with-clothing.png", {
+                    type: "image/png",
+                }),
+            );
+
+            renderFormData.append(
+                "prompt",
+                "Given the original image of the model and images of clothing pasted onto them, modify the original image to make the model look like they're realistically wearing that clothing.",
+            );
+
+            const clothingResponse = await fetch("/api/generate-image", {
+                method: "POST",
+                body: renderFormData,
+            });
+
+            if (!clothingResponse.ok) {
+                const data = await clothingResponse.json().catch(() => ({}));
+                throw new Error(
+                    data.error || `HTTP ${clothingResponse.status}`,
+                );
+            }
+
+            const blob = await clothingResponse.blob();
+            console.log("rendered", blob);
+        } catch (error) {
+            console.error("Failed to generate results:", error);
+        } finally {
+            setIsRendering(false);
+        }
+    };
 
     function handleDragStart(event: DragStartEvent) {
         setActiveId(event.active.id.toString());
@@ -90,6 +150,7 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
                         originalImage={originalImage}
                         droppedClothing={droppedClothing}
                         onChangePhoto={onChangePhoto}
+                        onRenderPhoto={handleRender}
                     />
                     <div>
                         <h2 className="text-2xl font-bold mb-4">
@@ -134,6 +195,7 @@ function MainImage(props: {
     originalImage: File;
     droppedClothing: { url: string; x: number; y: number; width: number }[];
     onChangePhoto: () => void;
+    onRenderPhoto: () => void;
     mainImageRef: React.RefObject<HTMLDivElement | null>;
 }) {
     const { setNodeRef } = useDroppable({
@@ -185,12 +247,19 @@ function MainImage(props: {
                 </div>
             </div>
 
-            <div className="flex justify-center mt-4">
+            <div className="flex justify-around mt-4">
                 <button
                     onClick={props.onChangePhoto}
                     className="w-full max-w-xs px-4 py-3 text-lg font-semibold text-white bg-indigo-600 rounded-lg shadow-md hover:bg-indigo-700 transition-colors active:scale-[0.98]"
                 >
                     Change Base Photo
+                </button>
+
+                <button
+                    onClick={props.onRenderPhoto}
+                    className="w-full max-w-xs px-4 py-3 text-lg font-semibold text-white bg-indigo-600 rounded-lg shadow-md hover:bg-indigo-700 transition-colors active:scale-[0.98]"
+                >
+                    Render
                 </button>
             </div>
         </div>
