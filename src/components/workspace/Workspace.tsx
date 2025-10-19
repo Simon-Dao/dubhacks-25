@@ -35,7 +35,7 @@ export default function Workspace() {
             );
             generateClothingFormData.append(
                 "prompt",
-                "Turn this sketch of a piece of clothing into a realistic image, no background.",
+                "Turn this sketch of a piece of clothing into a realistic image, smoothing out any scribbles into solid background colors, no background.",
             );
 
             const clothingResponse = await fetch("/api/generate-image", {
