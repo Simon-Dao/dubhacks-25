@@ -69,6 +69,8 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
                 originalImage,
                 droppedClothing,
             );
+            setRenderedImage(URL.createObjectURL(renderedCanvas));
+            setImageModalOpen(true);
             renderFormData.append(
                 "image",
                 new File([renderedCanvas!], "model-with-clothing.png", {
@@ -237,7 +239,7 @@ function MainImage(props: {
             {/* This element needs to have the same size as the parent of the images, since it's used for dnd calculation. */}
             <div
                 ref={setNodeRefWrapped}
-                className="max-h-[100vh] mx-auto"
+                className="max-h-[70vh] mx-auto"
                 style={{
                     ...(mainImageRef.current
                         ? {
@@ -249,7 +251,7 @@ function MainImage(props: {
                 <div className="relative border border-gray-300 rounded-lg overflow-hidden">
                     <img
                         ref={mainImageRef}
-                        className="w-full h-[100vh] object-contain"
+                        className="w-full h-[70vh] object-contain"
                         src={
                             props.originalImage
                                 ? URL.createObjectURL(props.originalImage)
@@ -281,14 +283,14 @@ function MainImage(props: {
             <div className="flex justify-around mt-4">
                 <button
                     onClick={props.onChangePhoto}
-                    className="w-full max-w-xs px-4 py-3 text-lg font-semibold text-white bg-indigo-600 rounded-lg shadow-md hover:bg-indigo-700 transition-colors active:scale-[0.98]"
+                    className="w-min sm:w-full max-w-xs px-4 py-3 text-lg font-semibold text-white bg-indigo-600 rounded-lg shadow-md hover:bg-indigo-700 transition-colors active:scale-[0.98]"
                 >
                     Change Base Photo
                 </button>
 
                 <button
                     onClick={props.onRenderPhoto}
-                    className="w-full max-w-xs px-4 py-3 text-lg font-semibold text-white bg-indigo-600 rounded-lg shadow-md hover:bg-indigo-700 transition-colors active:scale-[0.98]"
+                    className="w-min sm:w-full max-w-xs px-4 py-3 text-lg font-semibold text-white bg-indigo-600 rounded-lg shadow-md hover:bg-indigo-700 transition-colors active:scale-[0.98]"
                 >
                     Render
                 </button>
