@@ -6,7 +6,6 @@ import Footer from "../components/Footer";
 import ImageUploader from "../components/ImageUploader";
 import DrawingCanvas from "../components/DrawingCanvas";
 import ResultsDisplay from "../components/ResultsDisplay";
-import { Product } from "../components/ProductCard";
 import { ImageOnModel } from "@/lib/definitions";
 
 export default function Home() {
@@ -15,7 +14,6 @@ export default function Home() {
         { id: string; url: string; blob: Blob }[]
     >([]);
     const [droppedClothing, setDroppedClothing] = useState<ImageOnModel[]>([]);
-    const [products, setProducts] = useState<Product[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [isDrawing, setIsDrawing] = useState(false);
     const [isUploading, setIsUploading] = useState(false);
@@ -62,15 +60,6 @@ export default function Home() {
                     blob,
                 },
             ]);
-
-            const searchResponse = await fetch("/api/reverse-image-search", {
-                method: "POST",
-                body: JSON.stringify({
-                    clothingImage: URL.createObjectURL(blob),
-                }),
-            });
-            const { products } = await searchResponse.json();
-            setProducts(products);
         } catch (error) {
             console.error("Failed to generate results:", error);
         } finally {
@@ -96,7 +85,6 @@ export default function Home() {
                 <ResultsDisplay
                     originalImage={userImage}
                     generatedClothing={generatedClothing}
-                    products={products}
                     droppedClothing={droppedClothing}
                     setDroppedClothing={setDroppedClothing}
                     onChangePhoto={() => setIsUploading(true)}

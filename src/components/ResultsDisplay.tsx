@@ -8,7 +8,6 @@ import React, {
     useState,
 } from "react";
 
-import ProductCard, { Product } from "./ProductCard";
 import {
     DndContext,
     useDroppable,
@@ -26,7 +25,6 @@ import RenderedImageModal from "@/components/RenderedImageModal";
 interface ResultsDisplayProps {
     originalImage: File;
     generatedClothing: { id: string; url: string; blob: Blob }[];
-    products: Product[];
     droppedClothing: ImageOnModel[];
     setDroppedClothing: Dispatch<SetStateAction<ImageOnModel[]>>;
     onChangePhoto: () => void;
@@ -35,7 +33,6 @@ interface ResultsDisplayProps {
 const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
     originalImage,
     generatedClothing,
-    products,
     droppedClothing,
     setDroppedClothing,
     onChangePhoto,
@@ -175,20 +172,6 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
                                     />
                                 ))}
                             </div>
-                        </div>
-                    </div>
-
-                    <div className="mt-12 text-center">
-                        <h2 className="text-3xl font-bold mb-6">
-                            Shop Similar Styles
-                        </h2>
-                        <div className="flex justify-center gap-8 flex-wrap">
-                            {products.map((product) => (
-                                <ProductCard
-                                    key={product.id}
-                                    product={product}
-                                />
-                            ))}
                         </div>
                     </div>
                 </div>
