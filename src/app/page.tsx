@@ -1,13 +1,9 @@
 "use client";
 
-import React, { useState } from "react";
-import Header from "../components/Header";
-import Footer from "../components/Footer";
-import ImageUploader from "../components/ImageUploader";
-import DrawingCanvas from "../components/workspace/DrawingCanvas";
-import ResultsDisplay from "../components/workspace/ResultsDisplay";
-import { ImageOnModel } from "@/lib/definitions";
+import HomePage from "@/components/HomePage";
 
-export default function Home() {
-    return <>Home</>;
+export default function Main() {
+    return <>
+        <HomePage />
+    </>;
 }
