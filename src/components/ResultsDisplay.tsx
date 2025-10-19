@@ -234,17 +234,15 @@ function MainImage(props: {
         <div className="lg:col-span-2 p-4 bg-gray-50 shadow-xl rounded-xl">
             {/* This element needs to have the same size as the parent of the images, since it's used for dnd calculation. */}
             <div ref={setNodeRefWrapped}>
-                <div className="relative border border-gray-300 rounded-lg overflow-hidden">
-                    <Image
-                        className="w-full h-auto object-contain"
+                <div className="relative border border-gray-300 rounded-lg overflow-hidden max-h-[100vh]">
+                    <img
+                        className="w-full h-[100vh] object-contain"
                         src={
                             props.originalImage
                                 ? URL.createObjectURL(props.originalImage)
                                 : "https://placehold.co/800x800/e0e0e0/000000?text=Upload+Base+Image"
                         }
                         alt="Original user upload"
-                        width={800}
-                        height={800}
                     />
 
                     {props.droppedClothing &&
