@@ -20,7 +20,7 @@ import DraggableClothing from "./DraggableClothing";
 import Image from "next/image";
 import { ImageOnModel } from "@/lib/definitions";
 import { renderToBlob } from "@/lib/imageRenderer";
-import RenderedImageModal from "@/components/RenderedImageModal";
+import RenderedImageModal from "@/components/workspace/RenderedImageModal";
 
 interface ResultsDisplayProps {
     originalImage: File;
