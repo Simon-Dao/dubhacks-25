@@ -22,6 +22,7 @@ import { ImageOnModel } from "@/lib/definitions";
 import { renderToBlob } from "@/lib/imageRenderer";
 import RenderedImageModal from "@/components/workspace/RenderedImageModal";
 import { PlusIcon } from "@heroicons/react/24/solid";
+import { useLocalState } from "@/app/state/state";
 
 interface ResultsDisplayProps {
     originalImage: File;
@@ -58,6 +59,8 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
 
     const [renderedImage, setRenderedImage] = useState<string | null>(null);
     const [imageModalOpen, setImageModalOpen] = useState<boolean>(false);
+
+    const addOutfit = useLocalState((state) => state.addOutfit);
 
     const handleRender = async () => {
         if (isRendering) return;
@@ -102,6 +105,13 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
 
             const blob = await clothingResponse.blob();
             const dataURL = URL.createObjectURL(blob);
+
+            addOutfit({
+                id: Math.random().toString(),
+                name: "",
+                itemIds: [],
+                imageSrc: blob,
+            });
 
             setRenderedImage(dataURL);
             setOriginalImage(

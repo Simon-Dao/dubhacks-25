@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
+import { useLocalState } from "@/app/state/state";
 
 type Tab = "outfits" | "items";
 type Selection =
@@ -32,7 +33,7 @@ const Outfit: React.FC<{
                 className="object-cover w-full h-full"
             />
             <div className="absolute bottom-0 left-0 right-0 bg-black/40 text-white text-sm p-2 flex items-center justify-center">
-                <span className="truncate px-2">{outfit}</span>
+                {/* <span className="truncate px-2">{outfit}</span> */}
             </div>
         </button>
     );
@@ -58,7 +59,7 @@ const Item: React.FC<{ src: string; item: string; onClick: () => void }> = ({
                 className="object-cover w-full h-full"
             />
             <div className="absolute bottom-0 left-0 right-0 bg-black/40 text-white text-sm p-2 flex items-center justify-center">
-                <span className="truncate px-2">{item}</span>
+                {/* <span className="truncate px-2">{item}</span> */}
             </div>
         </button>
     );
@@ -129,14 +130,8 @@ const Modal: React.FC<{
 
 export default function Gallery() {
     // temp data — keep as empty by default; populate from props or API later
-    const [outfits] = useState<string[]>([
-        "/mock-data/model (1).png",
-        "/mock-data/model (4).png",
-    ]);
-    const [items] = useState<string[]>([
-        "/mock-data/item1.png",
-        "/mock-data/item2.png",
-    ]);
+    const outfits = useLocalState((state) => state.outfits);
+    const items = useLocalState((state) => state.items);
     const [currentTab, setCurrentTab] = useState<Tab>("outfits");
 
     const [selection, setSelection] = useState<Selection>(null);
@@ -184,12 +179,12 @@ export default function Gallery() {
                         ? outfits.map((outfit, index) => (
                               <li key={`outfit-${index}`}>
                                   <Outfit
-                                      src={outfit}
-                                      outfit={outfit}
+                                      src={URL.createObjectURL(outfit.imageSrc)}
+                                      outfit={outfit.id}
                                       onClick={() =>
                                           setSelection({
                                               type: "outfit",
-                                              value: outfit,
+                                              value: outfit.id,
                                           })
                                       }
                                   />
@@ -198,12 +193,12 @@ export default function Gallery() {
                         : items.map((item, index) => (
                               <li key={`item-${index}`}>
                                   <Item
-                                      src={item}
-                                      item={item}
+                                      src={URL.createObjectURL(item.imageSrc)}
+                                      item={item.id}
                                       onClick={() =>
                                           setSelection({
                                               type: "item",
-                                              value: item,
+                                              value: item.id,
                                           })
                                       }
                                   />

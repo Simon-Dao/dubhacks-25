@@ -8,6 +8,7 @@ import Header from "@/components/Header";
 import DrawingCanvas from "@/components/workspace/DrawingCanvas";
 import Footer from "@/components/Footer";
 import RenderStatus from "@/components/workspace/RenderStatus";
+import { useLocalState } from "@/app/state/state";
 
 export default function Workspace() {
     const [userImage, setUserImage] = useState<File | null>(null);
@@ -21,6 +22,8 @@ export default function Workspace() {
 
     const addRenderItem = useRef<() => void>(null);
     const removeRenderItem = useRef<() => void>(null);
+
+    const addClothingItem = useLocalState((state) => state.addItem);
 
     const handleImageUpload = (file: File) => {
         setUserImage(file);
@@ -57,12 +60,19 @@ export default function Workspace() {
             }
 
             const blob = await clothingResponse.blob();
+            const dataURL = URL.createObjectURL(blob);
+
+            addClothingItem({
+                id: Math.random().toString(),
+                name: "",
+                imageSrc: blob,
+            });
 
             setGeneratedClothing((prev) => [
                 ...prev,
                 {
                     id: Date.now().toString(),
-                    url: URL.createObjectURL(blob),
+                    url: dataURL,
                     blob,
                 },
             ]);
