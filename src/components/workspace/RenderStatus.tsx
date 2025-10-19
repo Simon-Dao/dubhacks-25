@@ -22,7 +22,6 @@ export default function RenderStatus({
                               progress *
                                   (1 + Math.random() * 0.05 * 100 ** -progress),
                           );
-                console.log(progress, newP);
                 return newP;
             });
         }, 100);

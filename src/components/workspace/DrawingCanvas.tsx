@@ -21,14 +21,16 @@ import TankTop from "../../../public/templates/tank.png";
 
 interface DrawingCanvasProps {
     onGenerate: (drawingDataUrl: Blob | null) => void;
+    setWorkspaceIsDrawing: (isDrawing: boolean) => void;
 }
 
-const DrawingCanvas: React.FC<DrawingCanvasProps> = ({ onGenerate }) => {
+const DrawingCanvas: React.FC<DrawingCanvasProps> = ({ onGenerate, setWorkspaceIsDrawing}) => {
     const drawingCanvasRef = useRef<HTMLCanvasElement>(null);
     const [isDrawing, setIsDrawing] = useState(false);
     const [isErasing, setIsErasing] = useState(false);
     const [brushColor, setBrushColor] = useState("#000000");
     const [brushSize, setBrushSize] = useState(10);
+
 
     const templates = [
         {
@@ -230,6 +232,12 @@ const DrawingCanvas: React.FC<DrawingCanvasProps> = ({ onGenerate }) => {
                         }
                     />
                 </div>
+                <button
+                    onClick={() => setWorkspaceIsDrawing(false)}
+                    className="px-4 py-2 text-white bg-red-500 rounded-md hover:bg-red-600 transition-colors"
+                >
+                    Exit
+                </button>
                 <button
                     onClick={() => setIsErasing(!isErasing)}
                     className={`px-4 py-2 rounded-md transition-colors ${
