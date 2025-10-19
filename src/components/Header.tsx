@@ -20,7 +20,7 @@ const Header = (props: HeaderProps) => {
                 " w-full p-4 shadow-md flex items-center justify-between"
             }
         >
-            <h1 className="text-2xl font-semibold ">AI Clothing Stylist</h1>
+            <h1 className="text-2xl font-semibold ">SketchFit</h1>
 
             <div className={props.dark ? "text-white" : ""}>
                 <Link href="/">
