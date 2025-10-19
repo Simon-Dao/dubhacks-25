@@ -8,7 +8,6 @@ import React, {
     useState,
 } from "react";
 
-import ProductCard, { Product } from "./ProductCard";
 import {
     DndContext,
     useDroppable,
@@ -21,24 +20,31 @@ import DraggableClothing from "./DraggableClothing";
 import Image from "next/image";
 import { ImageOnModel } from "@/lib/definitions";
 import { renderToBlob } from "@/lib/imageRenderer";
-import RenderedImageModal from "@/components/RenderedImageModal";
+import RenderedImageModal from "@/components/workspace/RenderedImageModal";
+import { PlusIcon } from "@heroicons/react/24/solid";
 
 interface ResultsDisplayProps {
     originalImage: File;
+    setOriginalImage: Dispatch<SetStateAction<File | null>>;
     generatedClothing: { id: string; url: string; blob: Blob }[];
-    products: Product[];
     droppedClothing: ImageOnModel[];
     setDroppedClothing: Dispatch<SetStateAction<ImageOnModel[]>>;
     onChangePhoto: () => void;
+    openDrawingPanel: () => void;
+    addRenderItem: React.RefObject<(() => void) | null>;
+    removeRenderItem: React.RefObject<(() => void) | null>;
 }
 
 const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
     originalImage,
+    setOriginalImage,
     generatedClothing,
-    products,
     droppedClothing,
     setDroppedClothing,
     onChangePhoto,
+    openDrawingPanel,
+    addRenderItem,
+    removeRenderItem,
 }) => {
     const [activeId, setActiveId] = useState<string | null>(null);
 
@@ -56,6 +62,7 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
     const handleRender = async () => {
         if (isRendering) return;
         setIsRendering(true);
+        addRenderItem.current!();
 
         try {
             const renderFormData = new FormData();
@@ -97,11 +104,14 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
             const dataURL = URL.createObjectURL(blob);
 
             setRenderedImage(dataURL);
+            setOriginalImage(new File([blob], "model-rendered.png", { type: blob.type }));
+            setDroppedClothing([]);
             setImageModalOpen(true);
         } catch (error) {
             console.error("Failed to generate results:", error);
         } finally {
             setIsRendering(false);
+            removeRenderItem.current!();
         }
     };
 
@@ -172,21 +182,14 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
                                         url={item.url}
                                     />
                                 ))}
-                            </div>
-                        </div>
-                    </div>
 
-                    <div className="mt-12 text-center">
-                        <h2 className="text-3xl font-bold mb-6">
-                            Shop Similar Styles
-                        </h2>
-                        <div className="flex justify-center gap-8 flex-wrap">
-                            {products.map((product) => (
-                                <ProductCard
-                                    key={product.id}
-                                    product={product}
-                                />
-                            ))}
+                                <div
+                                    className="cursor-pointer border border-gray-300 rounded-lg overflow-hidden w-full h-auto flex align-center justify-center items-center"
+                                    onClick={openDrawingPanel}
+                                >
+                                    <PlusIcon className="w-[50%] h-[50%]" />
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -230,21 +233,32 @@ function MainImage(props: {
         [setNodeRef, props.mainImageRef],
     );
 
+    const mainImageRef = useRef<HTMLImageElement>(null);
+
     return (
         <div className="lg:col-span-2 p-4 bg-gray-50 shadow-xl rounded-xl">
             {/* This element needs to have the same size as the parent of the images, since it's used for dnd calculation. */}
-            <div ref={setNodeRefWrapped}>
+            <div
+                ref={setNodeRefWrapped}
+                className="max-h-[70vh] mx-auto"
+                style={{
+                    ...(mainImageRef.current
+                        ? {
+                              aspectRatio: `${mainImageRef.current.naturalWidth}/${mainImageRef.current.naturalHeight}`,
+                          }
+                        : {}),
+                }}
+            >
                 <div className="relative border border-gray-300 rounded-lg overflow-hidden">
-                    <Image
-                        className="w-full h-auto object-contain"
+                    <img
+                        ref={mainImageRef}
+                        className="w-full h-[70vh] object-contain"
                         src={
                             props.originalImage
                                 ? URL.createObjectURL(props.originalImage)
                                 : "https://placehold.co/800x800/e0e0e0/000000?text=Upload+Base+Image"
                         }
                         alt="Original user upload"
-                        width={800}
-                        height={800}
                     />
 
                     {props.droppedClothing &&
@@ -270,14 +284,14 @@ function MainImage(props: {
             <div className="flex justify-around mt-4">
                 <button
                     onClick={props.onChangePhoto}
-                    className="w-full max-w-xs px-4 py-3 text-lg font-semibold text-white bg-indigo-600 rounded-lg shadow-md hover:bg-indigo-700 transition-colors active:scale-[0.98]"
+                    className="w-min sm:w-full max-w-xs px-4 py-3 text-lg font-semibold text-white bg-indigo-600 rounded-lg shadow-md hover:bg-indigo-700 transition-colors active:scale-[0.98]"
                 >
                     Change Base Photo
                 </button>
 
                 <button
                     onClick={props.onRenderPhoto}
-                    className="w-full max-w-xs px-4 py-3 text-lg font-semibold text-white bg-indigo-600 rounded-lg shadow-md hover:bg-indigo-700 transition-colors active:scale-[0.98]"
+                    className="w-min sm:w-full max-w-xs px-4 py-3 text-lg font-semibold text-white bg-indigo-600 rounded-lg shadow-md hover:bg-indigo-700 transition-colors active:scale-[0.98]"
                 >
                     Render
                 </button>

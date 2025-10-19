@@ -1,11 +1,52 @@
 import React from "react";
+import Image from "next/image";
+import { HomeIcon, PhotoIcon } from "@heroicons/react/24/outline";
+import Link from "next/link";
 
-const Header = () => {
+type HeaderProps = {
+    dark?: boolean;
+};
+
+const Header = (props: HeaderProps) => {
     return (
-        <header className="w-full p-4 bg-white shadow-md">
-            <h1 className="text-2xl font-semibold text-gray-800">
-                AI Clothing Stylist
-            </h1>
+        <header
+            className={
+                (props.dark
+                    ? "bg-[#1C1C1C] text-white"
+                    : "bg-white text-gray-800") +
+                " w-full p-4 shadow-md flex items-center justify-between"
+            }
+        >
+            <h1 className="text-2xl font-semibold ">AI Clothing Stylist</h1>
+            <div className={props.dark ? "text-white" : ""}>
+                <Link href="/">
+                    <button
+                        className={
+                            "p-2 rounded transition " +
+                            (props.dark
+                                ? "hover:bg-gray-800"
+                                : "hover:bg-gray-100")
+                        }
+                        aria-label="Home"
+                    >
+                        <HomeIcon className="w-8 h-8" />
+                    </button>
+                </Link>
+
+                <Link href={"/gallery"}>
+                    <button
+                        className={
+                            "p-2 rounded transition " +
+                            (props.dark
+                                ? "hover:bg-gray-800"
+                                : "hover:bg-gray-100")
+                        }
+                        aria-label="Gallery"
+                    >
+                        <PhotoIcon className="w-8 h-8" />
+                    </button>
+                </Link>
+            </div>
         </header>
     );
 };
