@@ -35,7 +35,7 @@ export default function Workspace() {
             );
             generateClothingFormData.append(
                 "prompt",
-                "Turn this sketch of a piece of clothing into a realistic image, no background.",
+                "Turn this sketch of a piece of clothing into a realistic image, smoothing out any scribbles into solid background colors, no background.",
             );
 
             const clothingResponse = await fetch("/api/generate-image", {
@@ -74,20 +74,13 @@ export default function Workspace() {
 
         return (
             <div className="w-full">
-                <div className="flex justify-end mb-4">
-                    <button
-                        onClick={() => setIsDrawing(true)}
-                        className="px-6 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors"
-                    >
-                        Draw New Clothing
-                    </button>
-                </div>
                 <ResultsDisplay
                     originalImage={userImage}
                     generatedClothing={generatedClothing}
                     droppedClothing={droppedClothing}
                     setDroppedClothing={setDroppedClothing}
                     onChangePhoto={() => setIsUploading(true)}
+                    openDrawingPanel={() => setIsDrawing(true)}
                 />
             </div>
         );

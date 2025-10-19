@@ -21,6 +21,7 @@ import Image from "next/image";
 import { ImageOnModel } from "@/lib/definitions";
 import { renderToBlob } from "@/lib/imageRenderer";
 import RenderedImageModal from "@/components/workspace/RenderedImageModal";
+import { PlusIcon } from "@heroicons/react/24/solid";
 
 interface ResultsDisplayProps {
     originalImage: File;
@@ -28,6 +29,7 @@ interface ResultsDisplayProps {
     droppedClothing: ImageOnModel[];
     setDroppedClothing: Dispatch<SetStateAction<ImageOnModel[]>>;
     onChangePhoto: () => void;
+    openDrawingPanel: () => void;
 }
 
 const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
@@ -36,6 +38,7 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
     droppedClothing,
     setDroppedClothing,
     onChangePhoto,
+    openDrawingPanel,
 }) => {
     const [activeId, setActiveId] = useState<string | null>(null);
 
@@ -66,8 +69,6 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
                 originalImage,
                 droppedClothing,
             );
-            setRenderedImage(URL.createObjectURL(renderedCanvas));
-            setImageModalOpen(true);
             renderFormData.append(
                 "image",
                 new File([renderedCanvas!], "model-with-clothing.png", {
@@ -171,6 +172,13 @@ const ResultsDisplay: React.FC<ResultsDisplayProps> = ({
                                         url={item.url}
                                     />
                                 ))}
+
+                                <div
+                                    className="cursor-pointer border border-gray-300 rounded-lg overflow-hidden w-full h-auto flex align-center justify-center items-center"
+                                    onClick={openDrawingPanel}
+                                >
+                                    <PlusIcon className="w-[50%] h-[50%]" />
+                                </div>
                             </div>
                         </div>
                     </div>
