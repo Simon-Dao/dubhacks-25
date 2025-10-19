@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import Image from "next/image";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
 
@@ -11,23 +12,34 @@ type Selection =
     | null;
 
 // Presentational subcomponents
-const Outfit: React.FC<{ outfit: string; onClick: () => void }> = ({
-    outfit,
-    onClick,
-}) => {
+const Outfit: React.FC<{
+    src: string;
+    outfit: string;
+    onClick: () => void;
+}> = ({ outfit, src, onClick }) => {
     return (
         <button
             type="button"
             onClick={onClick}
-            className="cursor-pointer rounded-xl border flex justify-center items-center p-5 w-[250px] h-[250px] m-2 bg-white shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-gray-900/40"
+            className="relative cursor-pointer rounded-xl border overflow-hidden w-[250px] h-[250px] m-2 bg-white shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-gray-900/40"
             aria-label={`Open outfit ${outfit}`}
         >
-            {outfit}
+            <Image
+                src={src}
+                alt={outfit}
+                width={250}
+                height={250}
+                className="object-cover w-full h-full"
+            />
+            <div className="absolute bottom-0 left-0 right-0 bg-black/40 text-white text-sm p-2 flex items-center justify-center">
+                <span className="truncate px-2">{outfit}</span>
+            </div>
         </button>
     );
 };
 
-const Item: React.FC<{ item: string; onClick: () => void }> = ({
+const Item: React.FC<{ src: string; item: string; onClick: () => void }> = ({
+    src,
     item,
     onClick,
 }) => {
@@ -35,10 +47,19 @@ const Item: React.FC<{ item: string; onClick: () => void }> = ({
         <button
             type="button"
             onClick={onClick}
-            className="cursor-pointer rounded-xl border flex justify-center items-center p-5 w-[250px] h-[250px] m-2 bg-white shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-gray-900/40"
+            className="relative cursor-pointer rounded-xl border overflow-hidden w-[250px] h-[250px] m-2 bg-white shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-gray-900/40"
             aria-label={`Open item ${item}`}
         >
-            {item}
+            <Image
+                src={src}
+                alt={item}
+                width={250}
+                height={250}
+                className="object-cover w-full h-full"
+            />
+            <div className="absolute bottom-0 left-0 right-0 bg-black/40 text-white text-sm p-2 flex items-center justify-center">
+                <span className="truncate px-2">{item}</span>
+            </div>
         </button>
     );
 };
@@ -108,8 +129,14 @@ const Modal: React.FC<{
 
 export default function Gallery() {
     // temp data — keep as empty by default; populate from props or API later
-    const [outfits, setOutfits] = useState<string[]>(["a"]);
-    const [items, setItems] = useState<string[]>(["b"]);
+    const [outfits] = useState<string[]>([
+        "/mock-data/model (1).png",
+        "/mock-data/model (4).png",
+    ]);
+    const [items] = useState<string[]>([
+        "/mock-data/item1.png",
+        "/mock-data/item2.png",
+    ]);
     const [currentTab, setCurrentTab] = useState<Tab>("outfits");
 
     const [selection, setSelection] = useState<Selection>(null);
@@ -157,6 +184,7 @@ export default function Gallery() {
                         ? outfits.map((outfit, index) => (
                               <li key={`outfit-${index}`}>
                                   <Outfit
+                                      src={outfit}
                                       outfit={outfit}
                                       onClick={() =>
                                           setSelection({
@@ -170,6 +198,7 @@ export default function Gallery() {
                         : items.map((item, index) => (
                               <li key={`item-${index}`}>
                                   <Item
+                                      src={item}
                                       item={item}
                                       onClick={() =>
                                           setSelection({
