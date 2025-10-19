@@ -230,12 +230,25 @@ function MainImage(props: {
         [setNodeRef, props.mainImageRef],
     );
 
+    const mainImageRef = useRef<HTMLImageElement>(null);
+
     return (
         <div className="lg:col-span-2 p-4 bg-gray-50 shadow-xl rounded-xl">
             {/* This element needs to have the same size as the parent of the images, since it's used for dnd calculation. */}
-            <div ref={setNodeRefWrapped}>
-                <div className="relative border border-gray-300 rounded-lg overflow-hidden max-h-[100vh]">
+            <div
+                ref={setNodeRefWrapped}
+                className="max-h-[100vh] mx-auto"
+                style={{
+                    ...(mainImageRef.current
+                        ? {
+                              aspectRatio: `${mainImageRef.current.naturalWidth}/${mainImageRef.current.naturalHeight}`,
+                          }
+                        : {}),
+                }}
+            >
+                <div className="relative border border-gray-300 rounded-lg overflow-hidden">
                     <img
+                        ref={mainImageRef}
                         className="w-full h-[100vh] object-contain"
                         src={
                             props.originalImage
