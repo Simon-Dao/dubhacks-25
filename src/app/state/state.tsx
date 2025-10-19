@@ -2,7 +2,7 @@
 "use client";
 
 import { create } from "zustand";
-import { openDB } from "idb";
+import { IDBPDatabase, openDB } from "idb";
 
 // Keep UUID for backward compatibility but prefer using plain string for ids
 export type UUID = string;
@@ -23,6 +23,7 @@ export interface Outfit {
 interface StoreState {
     items: Item[];
     outfits: Outfit[];
+    dbPromise: Promise<IDBPDatabase>;
 
     userId: string | null;
     setUserId: (id: string | null) => void;
@@ -40,14 +41,22 @@ export const useLocalState = create<StoreState>((set) => ({
     items: [],
     outfits: [],
     userId: null,
+    dbPromise: (typeof window !== "undefined"
+        ? openDB("main", 2, {
+              upgrade(db) {
+                  db.createObjectStore("main");
+              },
+          })
+        : null)!,
 
     setUserId: (id) => set({ userId: id }),
 
     addItem: (item) =>
         set((state) => {
             (async () => {
-                const db = await openDB("main");
-                await db.put("main", [...state.items, item], "items");
+                await (
+                    await state.dbPromise
+                ).put("main", [...state.items, item], "items");
             })();
             return { items: [...state.items, item] };
         }),
@@ -56,8 +65,7 @@ export const useLocalState = create<StoreState>((set) => ({
         set((state) => {
             const newItems = state.items.filter((i) => i.id !== id);
             (async () => {
-                const db = await openDB("main");
-                await db.put("main", newItems, "items");
+                await (await state.dbPromise).put("main", newItems, "items");
             })();
             return { items: newItems };
         }),
@@ -68,8 +76,7 @@ export const useLocalState = create<StoreState>((set) => ({
                 i.id === item.id ? item : i,
             );
             (async () => {
-                const db = await openDB("main");
-                await db.put("main", newItems, "items");
+                await (await state.dbPromise).put("main", newItems, "items");
             })();
             return { items: newItems };
         }),
@@ -77,8 +84,9 @@ export const useLocalState = create<StoreState>((set) => ({
     addOutfit: (outfit) =>
         set((state) => {
             (async () => {
-                const db = await openDB("main");
-                await db.put("main", [...state.outfits, outfit], "outfits");
+                await (
+                    await state.dbPromise
+                ).put("main", [...state.outfits, outfit], "outfits");
             })();
             return { outfits: [...state.outfits, outfit] };
         }),
@@ -87,8 +95,9 @@ export const useLocalState = create<StoreState>((set) => ({
         set((state) => {
             const newOutfits = state.outfits.filter((o) => o.id !== id);
             (async () => {
-                const db = await openDB("main");
-                await db.put("main", newOutfits, "outfits");
+                await (
+                    await state.dbPromise
+                ).put("main", newOutfits, "outfits");
             })();
             return { outfits: newOutfits };
         }),
@@ -99,8 +108,9 @@ export const useLocalState = create<StoreState>((set) => ({
                 o.id === outfit.id ? outfit : o,
             );
             (async () => {
-                const db = await openDB("main");
-                await db.put("main", newOutfits, "outfits");
+                await (
+                    await state.dbPromise
+                ).put("main", newOutfits, "outfits");
             })();
             return { outfits: newOutfits };
         }),
@@ -121,13 +131,7 @@ export const hydrateFromMongo = async () => {
 };
 
 export const hydrateFromIndexeddb = async () => {
-    const db = (
-        await openDB("main", 2, {
-            upgrade(db) {
-                db.createObjectStore("main");
-            },
-        })
-    )
+    const db = (await useLocalState.getState().dbPromise)
         .transaction("main")
         .objectStore("main");
 
@@ -135,6 +139,6 @@ export const hydrateFromIndexeddb = async () => {
         db.get("items"),
         db.get("outfits"),
     ]);
-    console.log(items, outfits);
+
     useLocalState.setState({ items: items ?? [], outfits: outfits ?? [] });
 };
